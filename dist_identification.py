@@ -2,32 +2,65 @@ import numpy as np
 import scipy
 import scipy.stats as st
 import matplotlib.pyplot as pyplot
+from pdb import set_trace
+import sys
+import warnings
+data = np.random.normal(loc=40, scale=3.57,size=1000)
+xmin = min(data)
+xmax = max(data)
+ndata= len(data)
+print("std=",np.std(data))
+print("mean=",np.mean(data))
 
-size= 100
-
-#data = np.random.random(size)*50
-data = np.random.normal(loc=20, scale=3.57,size=size)
-print(data)
-bins = np.linspace(-10, 60, 60)
-pyplot.hist(data, bins=bins, alpha=0.5)
-pyplot.xlim(0,60)
+bins = np.linspace(xmin, xmax, ndata)
+pyplot.hist(data, bins=bins, normed=True, alpha=0.7)
+pyplot.xlim(20,60)
 #pyplot.show()
+#sys.exit()
 
 
-candidate_dists = [st.laplace, st.norm]
-results=[]
+#candidate_dists = [st.laplace, st.norm]
+candidate_dists = [st.norm, st.lognorm, st.gamma, st.weibull_min, st.chi2,
+                   st.erlang, st.invweibull, st.invgauss, st.invgamma, st.beta]
+
+
+fittingResults=[]
 for dist in candidate_dists:
-    esti_params = dist.fit(data)
-    mle = dist.nnlf(esti_params, data)
-    results.append((dist.name, mle))
-    print((dist.name,esti_params))
+    with warnings.catch_warnings():
+        print("Processing:%s" % dist.name)
+        try:
+            warnings.filterwarnings('ignore')
+            # Fit dist to data
+            params = dist.fit(data)
 
-    fitted = dist.pdf(bins,
-                      *esti_params[:-2],
-                      loc=esti_params[-2], scale=esti_params[-1]) * 100
-    print(fitted)
-    pyplot.plot(fitted, label=dist.name)
-    pyplot.xlim(0,60)
+            # get fitted parameters
+            arg   = params[:-2]
+            loc   = params[-2]
+            scale = params[-1]
+
+            # likelihood and putative
+            mle = dist.nnlf(params, data)
+            result = (dist.name, mle, params)
+            print(result)
+            fittingResults.append(result)
+
+            # putative histogram bar height
+            putative_heights = dist.pdf(bins, *arg, loc=loc, scale=scale)
+
+            pyplot.plot(bins, putative_heights, label=dist.name)
+            pyplot.xlim(20, 60)
+        except NotImplementedError:
+            print(">> %s not implemented"% dist.name)
+        # put result in the
+
 
 pyplot.legend(loc='upper right')
 pyplot.show()
+
+set_trace()
+
+fittingResults= sorted(fittingResults, key=lambda x:x[1])
+for result in fittingResults:
+    print("%s with likelihood %.4f"%(result[0], result[1]))
+
+#class DistIdentify:
