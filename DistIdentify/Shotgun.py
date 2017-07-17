@@ -55,11 +55,12 @@ class ShotgunIdentification:
             else:
                 pyplot.savefig(file, dpi=1080)
 
-    def fitting(self, plot, file=None):
-        if plot:
-            bins = np.linspace(self.xmin, self.xmax, self.ndata)
-            pyplot.hist(self.data, bins=bins, normed=True, alpha=0.7)
-            pyplot.xlim(self.xmin,self.xmax)
+    def fitting(self):
+        # for plot
+        bins = np.linspace(self.xmin, self.xmax, self.ndata)
+        plot = pyplot.figure()
+        pyplot.hist(self.data, bins=bins, normed=True, alpha=0.7)
+        pyplot.xlim(self.xmin,self.xmax)
 
         fittingResults=[]
         for dist in self.candidate_dists:
@@ -79,21 +80,18 @@ class ShotgunIdentification:
                     mle = dist.nnlf(params, self.data)
                     result = (dist.name, mle, params)
                     fittingResults.append(result)
-                    print(params)
-                    if plot:
-                        # putative histogram bar height
-                        putative_heights = dist.pdf(bins, *arg, loc=loc, scale=scale)
-                        pyplot.plot(bins, putative_heights, label=dist.name)
-                        pyplot.xlim(self.xmin, self.xmax)
+                                        
+                    # putative histogram bar height
+                    putative_heights = dist.pdf(bins, *arg, loc=loc, scale=scale)
+                    pyplot.plot(bins, putative_heights, label=dist.name)
+                    pyplot.xlim(self.xmin, self.xmax)
+
                 except NotImplementedError:
                     print(">> %s not implemented"% dist.name)
         fittingResults =  sorted(fittingResults, key=lambda x:x[1])
         for result in fittingResults:
             print("%s with negative log likelihood %.4f"%(result[0], result[1]))
-        if plot:
-            pyplot.legend(loc='upper right')
-            if file==None:
-                pyplot.show()
-            else:
-                pyplot.savefig(file, dpi=1080)
-        return fittingResults
+        
+        pyplot.legend(loc='upper right')
+        
+        return (fittingResults, plot)
