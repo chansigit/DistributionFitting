@@ -62,5 +62,3 @@ set_trace()
 fittingResults= sorted(fittingResults, key=lambda x:x[1])
 for result in fittingResults:
     print("%s with likelihood %.4f"%(result[0], result[1]))
-
-#class DistIdentify:
