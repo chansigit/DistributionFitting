@@ -8,7 +8,7 @@ import warnings
 from tabulate import tabulate
 
 
-class DistIdentify:
+class ShotgunIdentification:
     def __init__(self, data):
         self.data = data
         self.ndata = len(self.data)
@@ -89,7 +89,7 @@ class DistIdentify:
                     print(">> %s not implemented"% dist.name)
         fittingResults =  sorted(fittingResults, key=lambda x:x[1])
         for result in fittingResults:
-            print("%s with likelihood %.4f"%(result[0], result[1]))
+            print("%s with negative log likelihood %.4f"%(result[0], result[1]))
         if plot:
             pyplot.legend(loc='upper right')
             if file==None:
