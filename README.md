@@ -22,7 +22,9 @@ By default, this package can automatically calculates the negative log likelihoo
     st.uniform, st.vonmises_line, st.wald, st.wrapcauchy,
     st.lomax, st.maxwell, st.mielke, st.ncf
 
-,which are provided by `scipy.stats` model
+,which are provided by `scipy.stats` model.
+
+You can also manually specify a subset of distributions above as candidates for fitting.
 
 See Test.DistIdentify.py for usage.
 
