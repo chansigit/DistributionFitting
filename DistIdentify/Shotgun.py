@@ -57,7 +57,7 @@ class ShotgunIdentification:
 
     def fitting(self):
         # for plot
-        bins = np.linspace(self.xmin, self.xmax, self.ndata)
+        bins = np.linspace(self.xmin, self.xmax, int(self.ndata*0.8))
         plot = pyplot.figure()
         pyplot.hist(self.data, bins=bins, normed=True, alpha=0.7)
         pyplot.xlim(self.xmin,self.xmax)
